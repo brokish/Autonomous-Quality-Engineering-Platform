@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE suite SYSTEM "https://testng.org/testng-1.0.dtd">
+<suite name="AQEP Test Suite" verbose="1">
+    <test name="Platform Tests">
+        <classes>
+            <class name="io.aqep.cli.tests.AnalysisConfigTest"/>
+            <class name="io.aqep.cli.tests.LocatorMemoryTest"/>
+            <class name="io.aqep.cli.tests.OllamaContainerIntegrationTest"/>
+            <class name="io.aqep.cli.tests.QualityReportWriterTest"/>
+            <class name="io.aqep.cli.tests.UrlSafetyPolicyTest"/>
+        </classes>
+    </test>
+</suite>

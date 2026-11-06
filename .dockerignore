@@ -1,0 +1,7 @@
+.git
+.idea
+**/target
+artifacts
+**/allure-results
+**/allure-report
+**/locator-memory.json

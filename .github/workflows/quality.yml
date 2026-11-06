@@ -1,0 +1,47 @@
+name: Quality Engineering Platform
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "21"
+          cache: maven
+      - name: Build and test
+        run: mvn --batch-mode --no-transfer-progress verify
+      - name: Install reactor artifacts
+        run: mvn --batch-mode --no-transfer-progress -DskipTests install
+      - name: Install Chromium
+        run: mvn --batch-mode --no-transfer-progress -pl platform-cli exec:java -Dexec.mainClass=com.microsoft.playwright.CLI -Dexec.args="install --with-deps chromium"
+      - name: Analyze example website
+        run: mvn --batch-mode --no-transfer-progress -pl platform-cli exec:java -Dexec.args="https://example.com --no-ai --out artifacts"
+      - name: Combine TestNG and scan results
+        shell: bash
+        run: |
+          mkdir -p artifacts/allure-results
+          cp -R platform-cli/allure-results/. artifacts/allure-results/
+      - name: Generate Allure HTML report
+        run: npx --yes allure-commandline@2.32.0 generate artifacts/allure-results --clean -o artifacts/allure-report
+      - name: Upload reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: aqep-quality-reports
+          path: |
+            artifacts/
+            **/target/surefire-reports/
+            **/allure-results/
+          if-no-files-found: warn
+          retention-days: 14

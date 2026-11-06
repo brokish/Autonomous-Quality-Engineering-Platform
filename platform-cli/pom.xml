@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent><groupId>io.aqep</groupId><artifactId>autonomous-quality-engineering-platform</artifactId><version>1.0.0-SNAPSHOT</version></parent>
+    <artifactId>platform-cli</artifactId>
+    <dependencies>
+        <dependency><groupId>io.aqep</groupId><artifactId>core-engine</artifactId><version>${project.version}</version></dependency>
+        <dependency><groupId>io.aqep</groupId><artifactId>ai-agents</artifactId><version>${project.version}</version></dependency>
+        <dependency><groupId>io.aqep</groupId><artifactId>reporting</artifactId><version>${project.version}</version></dependency>
+        <dependency><groupId>io.qameta.allure</groupId><artifactId>allure-testng</artifactId><scope>test</scope></dependency>
+        <dependency><groupId>org.testng</groupId><artifactId>testng</artifactId><scope>test</scope></dependency>
+        <dependency><groupId>org.testcontainers</groupId><artifactId>testcontainers</artifactId><scope>test</scope></dependency>
+    </dependencies>
+    <properties>
+        <testng.suiteXmlFile>src/test/resources/testng.xml</testng.suiteXmlFile>
+    </properties>
+    <build><plugins>
+        <plugin><groupId>org.apache.maven.plugins</groupId><artifactId>maven-compiler-plugin</artifactId></plugin>
+        <plugin>
+            <groupId>org.apache.maven.plugins</groupId><artifactId>maven-surefire-plugin</artifactId>
+            <configuration>
+                <useModulePath>false</useModulePath>
+                <suiteXmlFiles>
+                    <suiteXmlFile>${testng.suiteXmlFile}</suiteXmlFile>
+                </suiteXmlFiles>
+            </configuration>
+        </plugin>
+        <plugin>
+            <groupId>org.codehaus.mojo</groupId><artifactId>exec-maven-plugin</artifactId><version>3.5.0</version>
+            <configuration><mainClass>io.aqep.cli.AqepApplication</mainClass></configuration>
+        </plugin>
+        <plugin>
+            <groupId>org.apache.maven.plugins</groupId><artifactId>maven-shade-plugin</artifactId><version>3.6.0</version>
+            <executions><execution><phase>package</phase><goals><goal>shade</goal></goals>
+                <configuration>
+                    <createDependencyReducedPom>false</createDependencyReducedPom>
+                    <transformers><transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
+                        <mainClass>io.aqep.cli.AqepApplication</mainClass>
+                    </transformer></transformers>
+                </configuration>
+            </execution></executions>
+        </plugin>
+    </plugins></build>
+</project>

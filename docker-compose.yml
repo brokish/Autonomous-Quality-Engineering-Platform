@@ -1,0 +1,28 @@
+services:
+  ollama:
+    image: ollama/ollama:0.5.4
+    volumes:
+      - ollama-data:/root/.ollama
+    ports:
+      - "127.0.0.1:11434:11434"
+    healthcheck:
+      test: ["CMD", "ollama", "list"]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+
+  aqep:
+    build: .
+    depends_on:
+      ollama:
+        condition: service_healthy
+    volumes:
+      - ./artifacts:/app/artifacts
+      - locator-memory:/root/.aqep
+    environment:
+      OLLAMA_HOST: http://ollama:11434
+    profiles: ["analysis"]
+
+volumes:
+  ollama-data:
+  locator-memory:
