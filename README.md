@@ -75,9 +75,9 @@ After building/installing the modules and installing Chromium, run the CLI with 
 mvn -pl platform-cli exec:java "-Dexec.args=https://www.example.com --max-pages 10 --out artifacts"
 ```
 
-The first argument is the target URL. Options include `--max-pages` (default 10, maximum 100), `--timeout-seconds`, `--out`, `--ollama`, `--text-model`, `--vision-model`, and `--no-ai`. For example, append `--no-ai` to scan without contacting Ollama. The output directory is relative to the process working directory; when run through the `platform-cli` Maven module, the default `artifacts` directory is `platform-cli/artifacts`.
+The first argument is the target URL. Options include `--max-pages` (default 10, maximum 100), `--timeout-seconds`, `--out`, `--ollama`, `--text-model`, `--reasoning-model`, `--vision-model`, and `--no-ai`. For example, append `--no-ai` to scan without contacting Ollama. The output directory is relative to the process working directory; when run through the `platform-cli` Maven module, the default `artifacts` directory is `platform-cli/artifacts`.
 
-Only public HTTP(S) URLs are accepted. Crawling is read-only and same-origin; AQEP does not click controls, submit forms, authenticate, or intentionally change site state.
+Only public HTTP(S) URLs are accepted. Page traversal is same-origin. AQEP never clicks submit controls or sends forms. It fills visible form fields with synthetic values and checks built-in browser validity before submission; while doing so, all network requests and navigations are blocked. No credentials are used, and values stay in the browser.
 
 ## Optional local AI with Ollama
 
@@ -90,14 +90,23 @@ To use AI during a CLI scan:
 
    ```powershell
    ollama pull qwen2.5-coder:7b
+   ollama pull deepseek-r1
    ollama pull llava
    ollama list
    ```
 
-3. Run the CLI command without `--no-ai`. By default AQEP uses `qwen2.5-coder:7b` for text analysis and `llava` for screenshot analysis.
+3. Run the CLI command without `--no-ai`. By default AQEP uses `qwen2.5-coder:7b` for test strategy, `deepseek-r1` for root-cause analysis, and `llava` for screenshot analysis.
 
 Supported text models are `qwen2.5-coder:7b`, `qwen2.5-coder:14b`, and `deepseek-r1`; the approved vision model is `llava`. You can select a text model with `--text-model` and set a local Ollama endpoint with `--ollama`. Remote AI endpoints and unapproved model names are rejected. Ollama/model failures are included in the report and do not prevent the browser scan from completing.
 
+
+For a real local model integration test, run this optional PowerShell command from the repository root:
+
+```powershell
+.\scripts\test-with-ollama.ps1
+```
+
+It starts the Compose Ollama service, reuses its persistent model volume, ensures `qwen2.5-coder:7b` and `deepseek-r1` are available, and runs a separate TestNG suite that exercises AI scenario proposals and root-cause inference. The first run downloads several gigabytes; later runs reuse the downloaded models. The service is stopped after the suite finishes. The ordinary `mvn verify` suite remains fast and does not start Docker or Ollama. To separately verify the pre-submit browser behavior after installing Chromium, run `mvn -B -pl platform-cli -am test '-Dtestng.suiteXmlFile=src/test/resources/form-validation-testng.xml'`; the test triggers both `requestSubmit()` and legacy `form.submit()` from input handlers and confirms that neither submits.
 ## Optional Docker test
 
 The Testcontainers smoke test is skipped by default. To run it, start Docker Desktop and use PowerShell:
@@ -118,6 +127,7 @@ Docker Compose can run AQEP and Ollama together:
 docker compose build aqep
 docker compose up -d ollama
 docker compose exec ollama ollama pull qwen2.5-coder:7b
+docker compose exec ollama ollama pull deepseek-r1
 docker compose exec ollama ollama pull llava
 docker compose --profile analysis run --rm aqep https://www.example.com
 ```
@@ -134,10 +144,20 @@ allure generate platform-cli/artifacts/allure-results --clean -o platform-cli/ar
 
 ## Safety and scope
 
-AQEP rejects private, loopback, link-local, and local hostnames, blocks cross-origin navigations, and checks resource requests against private addresses. The crawler is bounded by the page limit and does not interact with site controls. A target can still serve large or hostile content, so use appropriate timeouts and network isolation.
+AQEP rejects private, loopback, link-local, and local hostnames, blocks cross-origin navigations, and checks resource requests against private addresses. The crawler is bounded by the page limit; form filling is synthetic, local to the browser, and performed with network access blocked. A target can still serve large or hostile content, so use appropriate timeouts and network isolation.
 
 The accessibility and UI analyzers report common heuristics such as missing labels, accessible names and image alt attributes, keyboard-focus exclusions, and broken images. Review the report findings; this is not a substitute for a full manual accessibility audit or a comprehensive broken-link scanner.
 
 Self-healing recipes use semantic locators (role, label, placeholder, text, or test ID), not generated XPath. The Ollama agent can suggest validated recipes from a DOM snapshot. Callers compose these suggestions with `SelfHealingLocator`; successful replacements can be stored in the user's `.aqep/locator-memory.json` via `LocatorMemory.forCurrentUser()`. Avoid sharing locator memory across sites or tenants with different trust boundaries.
 
 See [docs/architecture.md](docs/architecture.md) for module responsibilities and data flow.
+
+## GitHub Actions
+
+The `AQEP quality pipeline` workflow runs `mvn verify` on pushes and pull requests. A manual `workflow_dispatch` run can analyze a public URL with up to three pages and upload the generated reports as an artifact. Enable its `enable_ai` input to install and start local Ollama and download `qwen2.5-coder:7b`, `deepseek-r1`, and `llava`; the initial model download can take several minutes and uses multiple gigabytes. The normal CI path does not download models.
+
+## Discovery data
+
+Each scanned page includes a bounded inventory of links, buttons, forms, inputs, search fields, and download links in `analysis.json`. Each entry records a short label, a locator hint, and (where applicable) a destination and form method. The crawler fills visible form controls with synthetic values, checks native and `aria-invalid` state, records pre-submit screenshots, and blocks all requests while filling. It never clicks controls or submits forms. These checks cannot verify server-side validation because no request is sent.
+
+The current AI enrichment proposes bounded test scenarios from discovered page elements, generates root-cause observations, and can review screenshots through local Ollama. AI scenarios are currently proposals; deterministic checks include safe pre-submit form validation. The category scorecards use observed findings and do not represent a full manual or server-side audit.

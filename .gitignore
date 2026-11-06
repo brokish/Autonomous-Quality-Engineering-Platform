@@ -11,7 +11,9 @@ allure-report/
 .kotlin
 
 ### IntelliJ IDEA ###
-.idea/
+.idea/*
+!.idea/runConfigurations/
+!.idea/runConfigurations/**
 *.iws
 *.iml
 *.ipr
