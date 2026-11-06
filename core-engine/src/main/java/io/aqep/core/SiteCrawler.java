@@ -24,6 +24,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 public final class SiteCrawler {
     private final UrlSafetyPolicy safetyPolicy;
@@ -45,6 +46,8 @@ public final class SiteCrawler {
         List<PageResult> pages = new ArrayList<>();
         ArrayDeque<URI> pending = new ArrayDeque<>();
         Set<String> visited = new HashSet<>();
+        AtomicBoolean preSubmitValidation = new AtomicBoolean(false);
+        FormValidationExecutor formValidator = new FormValidationExecutor();
         pending.add(target);
 
         try (Playwright playwright = Playwright.create();
@@ -54,7 +57,9 @@ public final class SiteCrawler {
             context.route("**/*", route -> {
                 try {
                     URI requestUri = safetyPolicy.validatePublicUrl(route.request().url());
-                    if (route.request().isNavigationRequest() && !safetyPolicy.sameOrigin(origin, requestUri)) {
+                    if (preSubmitValidation.get()) {
+                        route.abort();
+                    } else if (route.request().isNavigationRequest() && !safetyPolicy.sameOrigin(origin, requestUri)) {
                         route.abort();
                     } else {
                         route.resume();
@@ -71,9 +76,34 @@ public final class SiteCrawler {
                 if (!visited.add(url)) continue;
                 websitePage.beginPage();
                 try {
-                    page.navigate(url, new Page.NavigateOptions().setWaitUntil(WaitUntilState.DOMCONTENTLOADED));
+                    try {
+                        page.navigate(url, new Page.NavigateOptions().setWaitUntil(WaitUntilState.DOMCONTENTLOADED)
+                                .setTimeout(60_000));
+                    } catch (PlaywrightException firstAttempt) {
+                        // Heavy or throttled pages often succeed on a second try.
+                        page.navigate(url, new Page.NavigateOptions().setWaitUntil(WaitUntilState.COMMIT)
+                                .setTimeout(60_000));
+                        page.waitForLoadState(com.microsoft.playwright.options.LoadState.DOMCONTENTLOADED,
+                                new Page.WaitForLoadStateOptions().setTimeout(30_000));
+                    }
                     Path screenshot = screenshotDirectory.resolve(String.format("page-%03d.png", pages.size() + 1));
                     PageResult result = websitePage.inspect(url, screenshot);
+                    preSubmitValidation.set(true);
+                    FormValidationOutcome formOutcome;
+                    try {
+                        Path formEvidence = screenshotDirectory.resolve(String.format("page-%03d", pages.size() + 1));
+                        formOutcome = formValidator.validate(page, url, formEvidence);
+                    } finally {
+                        preSubmitValidation.set(false);
+                    }
+                    if (!formOutcome.checks().isEmpty() || !formOutcome.findings().isEmpty()) {
+                        List<Finding> combined = new ArrayList<>(result.findings());
+                        combined.addAll(formOutcome.findings());
+                        result = new PageResult(result.url(), result.title(), result.description(), result.headings(),
+                                result.screenshotPath(), result.consoleErrors(), result.networkFailures(),
+                                result.discoveredLinks(), result.discoveredElements(), formOutcome.checks(),
+                                combined, result.stackTraces(), result.domSnapshot());
+                    }
                     pages.add(result);
                     result.discoveredLinks().stream().map(this::safeUri)
                             .filter(link -> link != null && safetyPolicy.sameOrigin(origin, link))

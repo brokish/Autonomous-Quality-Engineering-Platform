@@ -1,8 +1,8 @@
 package io.aqep.shared;
 
+import java.net.URI;
 import java.nio.file.Path;
 import java.time.Duration;
-import java.net.URI;
 import java.util.Set;
 
 public record AnalysisConfig(
@@ -12,6 +12,7 @@ public record AnalysisConfig(
         Duration navigationTimeout,
         String ollamaBaseUrl,
         String textModel,
+        String reasoningModel,
         String visionModel) {
 
     private static final Set<String> TEXT_MODELS = Set.of(
@@ -26,19 +27,29 @@ public record AnalysisConfig(
         }
         ollamaBaseUrl = ollamaBaseUrl == null || ollamaBaseUrl.isBlank() ? "http://localhost:11434" : ollamaBaseUrl;
         textModel = textModel == null || textModel.isBlank() ? "qwen2.5-coder:7b" : textModel;
+        reasoningModel = reasoningModel == null || reasoningModel.isBlank() ? "deepseek-r1" : reasoningModel;
         visionModel = visionModel == null || visionModel.isBlank() ? "llava" : visionModel;
         validateLocalOllamaEndpoint(ollamaBaseUrl);
         if (!TEXT_MODELS.contains(textModel)) {
             throw new IllegalArgumentException("Unsupported text model. Allowed models: " + TEXT_MODELS);
+        }
+        if (!TEXT_MODELS.contains(reasoningModel)) {
+            throw new IllegalArgumentException("Unsupported reasoning model. Allowed models: " + TEXT_MODELS);
         }
         if (!"llava".equals(visionModel)) {
             throw new IllegalArgumentException("Unsupported vision model. The only approved vision model is llava");
         }
     }
 
+    /** Backward-compatible constructor for callers that configure only the text and vision model. */
+    public AnalysisConfig(String targetUrl, Path outputDirectory, int maxPages, Duration navigationTimeout,
+                          String ollamaBaseUrl, String textModel, String visionModel) {
+        this(targetUrl, outputDirectory, maxPages, navigationTimeout, ollamaBaseUrl, textModel, "deepseek-r1", visionModel);
+    }
+
     public static AnalysisConfig defaults(String targetUrl) {
         return new AnalysisConfig(targetUrl, Path.of("artifacts"), 10, Duration.ofSeconds(25),
-                "http://localhost:11434", "qwen2.5-coder:7b", "llava");
+                "http://localhost:11434", "qwen2.5-coder:7b", "deepseek-r1", "llava");
     }
 
     private static void validateLocalOllamaEndpoint(String endpoint) {
