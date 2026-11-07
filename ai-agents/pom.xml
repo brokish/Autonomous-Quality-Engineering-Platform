@@ -9,5 +9,7 @@
         <dependency><groupId>io.aqep</groupId><artifactId>self-healing</artifactId><version>${project.version}</version></dependency>
         <dependency><groupId>com.microsoft.playwright</groupId><artifactId>playwright</artifactId></dependency>
         <dependency><groupId>com.fasterxml.jackson.core</groupId><artifactId>jackson-databind</artifactId></dependency>
+        <!-- Ollama AI Integration -->
+        <dependency><groupId>dev.langchain4j</groupId><artifactId>langchain4j-ollama</artifactId></dependency>
     </dependencies>
 </project>

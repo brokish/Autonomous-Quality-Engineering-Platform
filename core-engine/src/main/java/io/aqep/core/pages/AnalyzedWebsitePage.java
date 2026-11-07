@@ -5,6 +5,7 @@ import com.microsoft.playwright.Request;
 import com.microsoft.playwright.Response;
 import io.aqep.accessibility.AccessibilityAnalyzer;
 import io.aqep.shared.Finding;
+import io.aqep.shared.DiscoveredElement;
 import io.aqep.shared.PageResult;
 import io.aqep.ui.UiQualityAnalyzer;
 import com.microsoft.playwright.options.ScreenshotAnimations;
@@ -58,6 +59,7 @@ public final class AnalyzedWebsitePage {
         List<String> links = strings(page.locator("a[href]").evaluateAll(
                 "elements => [...new Set(elements.map(el => el.href).filter(Boolean))].slice(0, 500)"))
                 .stream().filter(this::isSameOriginLink).toList();
+        List<DiscoveredElement> elements = discoverElements();
         String title = page.title();
         String description = (String) page.evaluate(
                 "() => document.querySelector('meta[name=description]')?.content || ''");
@@ -66,9 +68,46 @@ public final class AnalyzedWebsitePage {
         page.screenshot(new Page.ScreenshotOptions().setPath(screenshot).setFullPage(true).setAnimations(
                 ScreenshotAnimations.DISABLED));
         return new PageResult(url, title, description, headings, screenshot.toString(),
-                consoleErrors, networkFailures, links, findings, List.of(), domSnapshot);
+                consoleErrors, networkFailures, links, elements, findings, List.of(), domSnapshot);
     }
 
+    private List<DiscoveredElement> discoverElements() {
+        Object raw = page.evaluate("""
+() => {
+          const label = el => (el.getAttribute('aria-label') || el.innerText || el.value ||
+            el.getAttribute('placeholder') || el.getAttribute('title') || '').trim().replace(/\\s+/g, ' ').slice(0, 300);
+          const hint = el => el.id ? '#' + el.id : el.name ? el.tagName.toLowerCase() + '[name="' + el.name + '"]' : el.tagName.toLowerCase();
+          const found = [];
+          for (const el of document.querySelectorAll('a[href],button,[role=button],form,input,select,textarea')) {
+            const tag = el.tagName.toLowerCase(), type = (el.type || '').toLowerCase(), form = tag === 'form' ? el : el.form;
+            const searchHint = [el.type, el.name, el.id, el.getAttribute('placeholder'), el.getAttribute('role')].join(' ');
+            const kind = tag === 'a' ? (el.hasAttribute('download') ? 'DOWNLOAD' : 'LINK') :
+              tag === 'button' || el.getAttribute('role') === 'button' ? 'BUTTON' : tag === 'form' ? 'FORM' :
+              type === 'search' || el.getAttribute('role') === 'searchbox' || /search|query/i.test(searchHint) ? 'SEARCH' : 'INPUT';
+            found.push({kind, label: label(el), locatorHint: hint(el), destination: tag === 'a' ? el.href : form ? form.action : '', formMethod: form ? (form.method || 'get').toUpperCase() : ''});
+            if (found.length >= 300) break;
+          }
+          return found;
+        }
+""");
+        if (!(raw instanceof List<?> values)) return List.of();
+        List<DiscoveredElement> result = new ArrayList<>();
+        for (Object value : values) {
+            if (!(value instanceof java.util.Map<?, ?> map)) continue;
+            try {
+                result.add(new DiscoveredElement(DiscoveredElement.Kind.valueOf(String.valueOf(map.get("kind"))),
+                        valueOf(map.get("label")), valueOf(map.get("locatorHint")), valueOf(map.get("destination")),
+                        valueOf(map.get("formMethod"))));
+            } catch (IllegalArgumentException ignored) {
+                // Browser supplied values are untrusted; skip malformed entries.
+            }
+        }
+        return List.copyOf(result);
+    }
+
+    private String valueOf(Object value) {
+        return value == null ? "" : String.valueOf(value);
+    }
     public void recordNavigationFailure(String url, String message) {
         networkFailures.add(message);
         runtimeFindings.add(new Finding("navigation-failure", Finding.Severity.HIGH, url,

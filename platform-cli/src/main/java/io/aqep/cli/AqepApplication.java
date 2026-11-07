@@ -33,6 +33,7 @@ public final class AqepApplication {
                         env("AQEP_TIMEOUT_SECONDS", "25")))),
                 options.getOrDefault("--ollama", env("OLLAMA_HOST", defaults.ollamaBaseUrl())),
                 options.getOrDefault("--text-model", env("AQEP_TEXT_MODEL", defaults.textModel())),
+                options.getOrDefault("--reasoning-model", env("AQEP_REASONING_MODEL", defaults.reasoningModel())),
                 options.getOrDefault("--vision-model", env("AQEP_VISION_MODEL", defaults.visionModel())));
 
         WebsiteAnalysisSteps steps = new WebsiteAnalysisSteps(
@@ -68,7 +69,7 @@ public final class AqepApplication {
         System.out.println("""
                 Autonomous Quality Engineering Platform
                 Usage: aqep <public-http(s)-url> [--max-pages N] [--out DIR] [--timeout-seconds N]
-                       [--ollama URL] [--text-model NAME] [--vision-model NAME] [--no-ai]
+                       [--ollama URL] [--text-model NAME] [--reasoning-model NAME] [--vision-model NAME] [--no-ai]
                 Ollama defaults: qwen2.5-coder:7b for root cause; llava for visual analysis.
                 Crawling is read-only, same-origin, and limited to 100 pages maximum.
                 """);
