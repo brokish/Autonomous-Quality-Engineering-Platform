@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE suite SYSTEM "https://testng.org/testng-1.0.dtd">
+<suite name="Full-Flow-With-Ollama-AI" verbose="2">
+    <!-- Change the site to test here. Override from CLI: mvn -pl platform-cli test -Daqep.url=https://... -->
+    <parameter name="targetUrl" value="https://claude.com/product/claude-code"/>
+    <parameter name="enableAi" value="true"/>
+
+    <test name="Action-Execution">
+        <classes>
+            <class name="io.aqep.core.execution.ActionExecutorTest"/>
+        </classes>
+    </test>
+    <test name="Website-Analysis">
+        <classes>
+            <class name="io.aqep.cli.tests.WebsiteAnalysisTest"/>
+        </classes>
+    </test>
+    <test name="Ollama-AI-Analysis">
+        <classes>
+            <class name="io.aqep.cli.tests.OllamaAgentIntegrationTest"/>
+        </classes>
+    </test>
+</suite>
+

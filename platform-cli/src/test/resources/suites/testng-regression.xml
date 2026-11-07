@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE suite SYSTEM "https://testng.org/testng-1.0.dtd">
+<!-- Regression suite: runs every saved generated test of every site. No Ollama needed, fully deterministic.
+     Run: mvn -pl platform-cli -am test "-Dtestng.suiteXmlFile=src/test/resources/suites/testng-regression.xml"
+     One site only: add -Dgroups=<site>. Staging: -Daqep.generated.baseUrl=https://staging.example.com -->
+<suite name="Regression-Generated-Tests" verbose="2">
+    <parameter name="headless" value="true"/>
+    <test name="Regression">
+        <groups>
+            <run><include name="regression"/></run>
+        </groups>
+        <packages>
+            <package name="io.aqep.generated.*"/>
+        </packages>
+    </test>
+</suite>

@@ -1,0 +1,273 @@
+[ {
+  "name" : "Verify that the main menu closes when clicking 'Close main menu'",
+  "category" : "NAVIGATION",
+  "description" : "Ensure that the main menu can be closed by clicking the 'Close main menu' button, providing a smooth user experience.",
+  "startUrl" : "https://www.jetbrains.com/",
+  "clickLocator" : null,
+  "searchLocator" : null,
+  "searchTerm" : null,
+  "assertions" : [ {
+    "type" : "URL_CONTAINS",
+    "locator" : null,
+    "value" : "/store/"
+  }, {
+    "type" : "TITLE_CONTAINS",
+    "locator" : null,
+    "value" : "Monthly and yearly plans with JetBrains Toolbox"
+  }, {
+    "type" : "ELEMENT_VISIBLE",
+    "locator" : "role=heading[name=\"Subscription Options and Pricing\"] >> nth=0",
+    "value" : null
+  } ],
+  "steps" : [ {
+    "type" : "CLICK",
+    "pageUrl" : "https://www.jetbrains.com/",
+    "locator" : "role=button[name=\"Products: Open submenu\"] >> nth=0",
+    "term" : null,
+    "resultUrl" : "https://www.jetbrains.com/",
+    "expectUrl" : null,
+    "expectTitle" : null
+  }, {
+    "type" : "CLICK",
+    "pageUrl" : "https://www.jetbrains.com/",
+    "locator" : "role=link[name=\"Navigate to main page\"] >> nth=0",
+    "term" : null,
+    "resultUrl" : "https://www.jetbrains.com/",
+    "expectUrl" : null,
+    "expectTitle" : null
+  }, {
+    "type" : "CLICK",
+    "pageUrl" : "https://www.jetbrains.com/",
+    "locator" : "role=button[name=\"For Business: Open submenu\"] >> nth=0",
+    "term" : null,
+    "resultUrl" : "https://www.jetbrains.com/",
+    "expectUrl" : null,
+    "expectTitle" : null
+  }, {
+    "type" : "CLICK",
+    "pageUrl" : "https://www.jetbrains.com/",
+    "locator" : "role=link[name=\"Navigate to Store\"] >> nth=0",
+    "term" : null,
+    "resultUrl" : "https://www.jetbrains.com/store/?section=commercial&billing=yearly",
+    "expectUrl" : "/store/",
+    "expectTitle" : "Monthly and yearly plans with JetBrains Toolbox"
+  }, {
+    "type" : "CLICK",
+    "pageUrl" : "https://www.jetbrains.com/store/?section=commercial&billing=yearly",
+    "locator" : "role=button[name=\"Support: Open submenu\"] >> nth=0",
+    "term" : null,
+    "resultUrl" : "https://www.jetbrains.com/store/?section=commercial&billing=yearly",
+    "expectUrl" : null,
+    "expectTitle" : null
+  } ],
+  "endUrl" : "https://www.jetbrains.com/store/?section=commercial&billing=yearly"
+}, {
+  "name" : "Verify that the 'Explore JetBrains IDEs' page is accessible from the main menu",
+  "category" : "NAVIGATION",
+  "description" : "Ensure that users can navigate to the 'Explore JetBrains IDEs' page by clicking the corresponding link in the main menu.",
+  "startUrl" : "https://www.jetbrains.com/",
+  "clickLocator" : null,
+  "searchLocator" : null,
+  "searchTerm" : null,
+  "assertions" : [ {
+    "type" : "URL_CONTAINS",
+    "locator" : null,
+    "value" : "/air/ides/"
+  }, {
+    "type" : "ELEMENT_VISIBLE",
+    "locator" : "role=heading[name=\"Use your agents. Keep your IDE.\"] >> nth=0",
+    "value" : null
+  } ],
+  "steps" : [ {
+    "type" : "CLICK",
+    "pageUrl" : "https://www.jetbrains.com/",
+    "locator" : "role=button[name=\"Products: Open submenu\"] >> nth=0",
+    "term" : null,
+    "resultUrl" : "https://www.jetbrains.com/",
+    "expectUrl" : null,
+    "expectTitle" : null
+  }, {
+    "type" : "CLICK",
+    "pageUrl" : "https://www.jetbrains.com/",
+    "locator" : "role=link[name=\"All IDEs\"] >> nth=0",
+    "term" : null,
+    "resultUrl" : "https://www.jetbrains.com/ides/",
+    "expectUrl" : "/ides/",
+    "expectTitle" : "JetBrains IDEs: enjoy an exceptional developer experience"
+  }, {
+    "type" : "CLICK",
+    "pageUrl" : "https://www.jetbrains.com/ides/",
+    "locator" : "role=link[name=\"Explore Air\"] >> nth=0",
+    "term" : null,
+    "resultUrl" : "https://www.jetbrains.com/air/ides/",
+    "expectUrl" : "/air/ides/",
+    "expectTitle" : null
+  }, {
+    "type" : "CLICK",
+    "pageUrl" : "https://www.jetbrains.com/air/ides/",
+    "locator" : "role=button[name=\"For Business: Open submenu\"] >> nth=0",
+    "term" : null,
+    "resultUrl" : "https://www.jetbrains.com/air/ides/",
+    "expectUrl" : null,
+    "expectTitle" : null
+  } ],
+  "endUrl" : "https://www.jetbrains.com/air/ides/"
+}, {
+  "name" : "Verify that the user can access the 'All Products Pack' page from the 'Business' section",
+  "category" : "NAVIGATION",
+  "description" : "The 'All Products Pack' offers a bundle of JetBrains developer tools. Users should be able to navigate to this page from the 'Business' section for easy access to the bundle.",
+  "startUrl" : "https://www.jetbrains.com/",
+  "clickLocator" : null,
+  "searchLocator" : null,
+  "searchTerm" : null,
+  "assertions" : [ {
+    "type" : "URL_CONTAINS",
+    "locator" : null,
+    "value" : "/products/"
+  }, {
+    "type" : "TITLE_CONTAINS",
+    "locator" : null,
+    "value" : "All Developer Tools and Products by JetBrains"
+  }, {
+    "type" : "ELEMENT_VISIBLE",
+    "locator" : "role=heading[name=\"Find the right tool\"] >> nth=0",
+    "value" : null
+  } ],
+  "steps" : [ {
+    "type" : "CLICK",
+    "pageUrl" : "https://www.jetbrains.com/",
+    "locator" : "role=button[name=\"Products: Open submenu\"] >> nth=0",
+    "term" : null,
+    "resultUrl" : "https://www.jetbrains.com/",
+    "expectUrl" : null,
+    "expectTitle" : null
+  }, {
+    "type" : "CLICK",
+    "pageUrl" : "https://www.jetbrains.com/",
+    "locator" : "role=link[name=\"Koog\"] >> nth=0",
+    "term" : null,
+    "resultUrl" : "https://www.jetbrains.com/koog/",
+    "expectUrl" : "/koog/",
+    "expectTitle" : null
+  }, {
+    "type" : "CLICK",
+    "pageUrl" : "https://www.jetbrains.com/koog/",
+    "locator" : "role=button[name=\"For Business: Open submenu\"] >> nth=0",
+    "term" : null,
+    "resultUrl" : "https://www.jetbrains.com/koog/",
+    "expectUrl" : null,
+    "expectTitle" : null
+  }, {
+    "type" : "CLICK",
+    "pageUrl" : "https://www.jetbrains.com/koog/",
+    "locator" : "role=link[name=\"All Products Pack All JetBrains developer tools in one subscription\"] >> nth=0",
+    "term" : null,
+    "resultUrl" : "https://www.jetbrains.com/all/",
+    "expectUrl" : "/all/",
+    "expectTitle" : "All Products Pack: All JetBrains IDEs in one subscription"
+  }, {
+    "type" : "CLICK",
+    "pageUrl" : "https://www.jetbrains.com/all/",
+    "locator" : "role=link[name=\"All Products Pack\"] >> nth=0",
+    "term" : null,
+    "resultUrl" : "https://www.jetbrains.com/all/",
+    "expectUrl" : null,
+    "expectTitle" : null
+  }, {
+    "type" : "CLICK",
+    "pageUrl" : "https://www.jetbrains.com/all/",
+    "locator" : "role=button[name=\"Education: Open submenu\"] >> nth=0",
+    "term" : null,
+    "resultUrl" : "https://www.jetbrains.com/all/",
+    "expectUrl" : null,
+    "expectTitle" : null
+  }, {
+    "type" : "CLICK",
+    "pageUrl" : "https://www.jetbrains.com/all/",
+    "locator" : "role=button[name=\"Solutions: Open submenu\"] >> nth=0",
+    "term" : null,
+    "resultUrl" : "https://www.jetbrains.com/all/",
+    "expectUrl" : null,
+    "expectTitle" : null
+  }, {
+    "type" : "CLICK",
+    "pageUrl" : "https://www.jetbrains.com/all/",
+    "locator" : "role=link[name=\"Remote Development Tools for remote development for you and your team\"] >> nth=0",
+    "term" : null,
+    "resultUrl" : "https://www.jetbrains.com/remote-development/",
+    "expectUrl" : "/remote-development/",
+    "expectTitle" : "Remote Development by JetBrains"
+  }, {
+    "type" : "CLICK",
+    "pageUrl" : "https://www.jetbrains.com/remote-development/",
+    "locator" : "role=link[name=\"Team Tools\"] >> nth=0",
+    "term" : null,
+    "resultUrl" : "https://www.jetbrains.com/products/?type=team",
+    "expectUrl" : "/products/",
+    "expectTitle" : "All Developer Tools and Products by JetBrains"
+  } ],
+  "endUrl" : "https://www.jetbrains.com/products/?type=team"
+}, {
+  "name" : "Verify that the user can access the 'TeamCity' page from the 'Business' section",
+  "category" : "NAVIGATION",
+  "description" : "TeamCity is a continuous integration and delivery tool. Users should be able to navigate to this page from the 'Business' section to explore this product.",
+  "startUrl" : "https://www.jetbrains.com/",
+  "clickLocator" : null,
+  "searchLocator" : null,
+  "searchTerm" : null,
+  "assertions" : [ {
+    "type" : "URL_CONTAINS",
+    "locator" : null,
+    "value" : "/teamcity/integrations/"
+  }, {
+    "type" : "TITLE_CONTAINS",
+    "locator" : null,
+    "value" : "TeamCity Integrations"
+  }, {
+    "type" : "ELEMENT_VISIBLE",
+    "locator" : "role=heading[name=\"TeamCity CI/CD Integrations\"] >> nth=0",
+    "value" : null
+  } ],
+  "steps" : [ {
+    "type" : "CLICK",
+    "pageUrl" : "https://www.jetbrains.com/",
+    "locator" : "role=button[name=\"For Business: Open submenu\"] >> nth=0",
+    "term" : null,
+    "resultUrl" : "https://www.jetbrains.com/",
+    "expectUrl" : null,
+    "expectTitle" : null
+  }, {
+    "type" : "CLICK",
+    "pageUrl" : "https://www.jetbrains.com/",
+    "locator" : "role=button[name=\"Products: Open submenu\"] >> nth=0",
+    "term" : null,
+    "resultUrl" : "https://www.jetbrains.com/",
+    "expectUrl" : null,
+    "expectTitle" : null
+  }, {
+    "type" : "CLICK",
+    "pageUrl" : "https://www.jetbrains.com/",
+    "locator" : "role=link[name=\"TeamCity\"] >> nth=0",
+    "term" : null,
+    "resultUrl" : "https://www.jetbrains.com/teamcity/",
+    "expectUrl" : "/teamcity/",
+    "expectTitle" : "TeamCity"
+  }, {
+    "type" : "CLICK",
+    "pageUrl" : "https://www.jetbrains.com/teamcity/",
+    "locator" : "role=link[name=\"Integrations\"] >> nth=0",
+    "term" : null,
+    "resultUrl" : "https://www.jetbrains.com/teamcity/integrations/",
+    "expectUrl" : "/teamcity/integrations/",
+    "expectTitle" : "TeamCity Integrations"
+  }, {
+    "type" : "CLICK",
+    "pageUrl" : "https://www.jetbrains.com/teamcity/integrations/",
+    "locator" : "role=button[name=\"Education: Open submenu\"] >> nth=0",
+    "term" : null,
+    "resultUrl" : "https://www.jetbrains.com/teamcity/integrations/",
+    "expectUrl" : null,
+    "expectTitle" : null
+  } ],
+  "endUrl" : "https://www.jetbrains.com/teamcity/integrations/"
+} ]

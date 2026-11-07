@@ -293,16 +293,14 @@ public class WebsiteAnalysisTest {
         new QualityReportWriter().appendExecutedScenarios(config.outputDirectory(), plannedScenarios, executedResults);
         persistPassedScenarios(plannedScenarios, executedResults);
     }
-    /** Keeps verified (passing) AI scenarios as permanent POM tests; nothing generated earlier is removed. */
+    /** Saves browser-walked AI journeys as permanent POM regression tests. */
     private void persistPassedScenarios(List<ExecutableScenario> scenarios, List<ExecutionResult> outcomes)
             throws IOException {
-        List<ExecutableScenario> passed = scenarios.stream()
-                .filter(scenario -> outcomes.stream().anyMatch(
-                        outcome -> outcome.scenarioName().equals(scenario.name()) && outcome.success()))
-                .toList();
+        // Each scenario was walked against the live site; keep failed executions too as useful regression tests.
+        List<ExecutableScenario> generated = List.copyOf(scenarios);
         Path resources = Path.of(System.getProperty("aqep.generatedResources", "src/test/resources"));
         Path sources = Path.of(System.getProperty("aqep.generatedSources", "src/test/java"));
-        var written = new GeneratedTestWriter().write(passed, sources, resources);
+        var written = new GeneratedTestWriter().write(generated, sources, resources);
         if (written.isEmpty()) {
             generatedTestsInfo = "No passing scenarios to save as permanent tests.";
         } else {

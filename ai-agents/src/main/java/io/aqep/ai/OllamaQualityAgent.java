@@ -147,7 +147,7 @@ public final class OllamaQualityAgent implements QualityAiAgent {
                 %s
 
                 Task: you are a senior QA engineer. Write 10 different end-to-end regression scenarios for this
-                website, grounded only in the elements above. Each is a realistic user journey of 3 to 5 steps
+                website, grounded only in the elements above. Each is a realistic, substantial user journey of 6 to 10 steps
                 (e.g. open a menu, pick a section, drill into a product page, search, verify the result) with a
                 single clear purpose and a verifiable outcome. Use specific business-readable titles ("Verify that
                 <expected result> when <user action>"), different starting points and destinations, no duplicates.
@@ -208,8 +208,7 @@ public final class OllamaQualityAgent implements QualityAiAgent {
                         Optional<ExecutableScenario> journey = explorer.explore(scenario, analysis.targetUrl(), model);
                         if (journey.isPresent()) {
                             ExecutableScenario flow = journey.get();
-                            if (planned.stream().noneMatch(existing -> existing.actions().equals(flow.actions())
-                                    || endsOnSamePage(existing, flow))) {
+                            if (planned.stream().noneMatch(existing -> existing.actions().equals(flow.actions()))) {
                                 planned.add(flow);
                             }
                             break;

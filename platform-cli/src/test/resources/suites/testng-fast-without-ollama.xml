@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE suite SYSTEM "https://testng.org/testng-1.0.dtd">
+<suite name="Full-Flow-Without-Ollama-Fast" verbose="2">
+    <!-- Change the site to test here. Override from CLI: mvn -pl platform-cli test -Daqep.url=https://... -->
+    <parameter name="targetUrl" value="https://www.jetbrains.com/"/>
+
+    <test name="Action-Execution">
+        <classes>
+            <class name="io.aqep.core.execution.ActionExecutorTest"/>
+        </classes>
+    </test>
+    <test name="Website-Analysis">
+        <classes>
+            <class name="io.aqep.cli.tests.WebsiteAnalysisTest"/>
+        </classes>
+    </test>
+</suite>
